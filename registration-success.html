@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registration Success</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #status.success {
+      color: green;
+    }
+    #status.error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upload Profile Image</h2>
+  <input type="file" id="imageInput" accept="image/*" />
+  <br><br>
+  <button id="uploadBtn">Upload</button>
+  <p id="status"></p>
+
+  <script>
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+      const userId = 1; // Replace with the actual user ID
+      const fileInput = document.getElementById('imageInput');
+      const file = fileInput.files[0];
+      const status = document.getElementById('status');
+
+      if (!file) {
+        alert('Please select an image first!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      status.textContent = 'Uploading...';
+      status.className = '';
+
+      fetch(`/upload-profile-image/${userId}`, {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(data => {
+          status.textContent = data;
+          status.className = 'success';
+        })
+        .catch(error => {
+          status.textContent = 'Failed to upload the image. Please try again.';
+          status.className = 'error';
+          console.error('Error:', error);
+        });
+    });
+  </script>
+</body>
+</html>
